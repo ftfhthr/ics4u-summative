@@ -1,0 +1,23 @@
+body {
+    background-color: black;
+    color: white;
+}
+
+button {
+    cursor: pointer;
+}
+
+.subscribe-button {
+    width: 100px;
+    height: 30px;
+    font-weight: bold;
+    background-color: red;
+    color: white;
+    font-size: 1rem;
+    border: 0;
+    border-radius: 100px;
+}
+
+.subscribe-button:hover {
+    background-color: black;
+}
