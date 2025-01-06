@@ -3,13 +3,16 @@ import { useNavigate } from "react-router-dom";
 import Header from "../components/Header.jsx"
 import Footer from "../components/Footer.jsx"
 import { useStoreContext } from "../context/index.jsx";
+import { createUserWithEmailAndPassword, updateProfile, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { auth } from "../firebase";
 
 const RegisterView = () => {
     const [pass1, setPass1] = useState("");
     const [pass2, setPass2] = useState("");
-    const { setEmail } = useStoreContext();
-    const { setFirstName } = useStoreContext();
-    const { setLastName } = useStoreContext();
+    const { setUser } = useStoreContext();
+    const { email, setEmail } = useStoreContext();
+    const { firstName, setFirstName } = useStoreContext();
+    const { lastName, setLastName } = useStoreContext();
     const { genres, setGenres } = useStoreContext();
     const navigate = useNavigate();
     var checkedGenres = JSON.parse(JSON.stringify(genres));
@@ -21,15 +24,39 @@ const RegisterView = () => {
                 genresSelected++;
             }
         }
-        if (genresSelected < 10) {
-            return false;
-        } else {
+        // if (genresSelected < 10) {
+        //     return false;
+        // } else {
             return true;
+        // }
+    }
+
+    const registerByEmail = async (event) => {
+        event.preventDefault();
+    
+        // try {
+          const user = (await createUserWithEmailAndPassword(auth, "a@a.com", "123456")).user;
+          await updateProfile(user, { displayName: `${firstName} ${lastName}` });
+          setUser(user);
+          navigate('/movies');
+        // } catch (error) {
+        //   alert("Error creating user with email and password!");
+        // }
+    };
+
+    const registerByGoogle = async () => {
+        try {
+          const user = (await signInWithPopup(auth, new GoogleAuthProvider())).user;
+          setUser(user);
+          navigate('/movies');
+        } catch {
+          alert("Error creating user with email and password!");
         }
     }
 
     const createAccount = (e) => {
         e.preventDefault();
+        registerByEmail(e);
         if (pass1 != pass2) {
             alert("Passwords don't match!");
         } else if (!checkGenres()) {
@@ -77,6 +104,7 @@ const RegisterView = () => {
                             <label htmlFor={genre.genre}>{genre.genre}</label>
                         </div>
                     ))}
+                    <button onClick={() => registerByGoogle()} className="register-button">Register by Google</button>
                     <input type="submit" value={"Sign Up"} required />
                 </form>
             </div>
