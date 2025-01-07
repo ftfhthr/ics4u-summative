@@ -4,12 +4,14 @@ import Header from "../components/Header.jsx"
 import Footer from "../components/Footer.jsx"
 import { useStoreContext } from "../context/index.jsx";
 import { createUserWithEmailAndPassword, updateProfile, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore"; 
 import { auth } from "../firebase";
+import { firestore } from "../firebase/index.js"
 
 const RegisterView = () => {
     const [pass1, setPass1] = useState("");
     const [pass2, setPass2] = useState("");
-    const { setUser } = useStoreContext();
+    const { user, setUser } = useStoreContext();
     const { email, setEmail } = useStoreContext();
     const { firstName, setFirstName } = useStoreContext();
     const { lastName, setLastName } = useStoreContext();
@@ -24,18 +26,18 @@ const RegisterView = () => {
                 genresSelected++;
             }
         }
-        // if (genresSelected < 10) {
-        //     return false;
-        // } else {
+        if (genresSelected < 10) {
+            return false;
+        } else {
             return true;
-        // }
+        }
     }
 
     const registerByEmail = async (event) => {
         event.preventDefault();
     
         // try {
-          const user = (await createUserWithEmailAndPassword(auth, "a@a.com", "123456")).user;
+          const user = (await createUserWithEmailAndPassword(auth, "a@aaqaa.com", "123456")).user;
           await updateProfile(user, { displayName: `${firstName} ${lastName}` });
           setUser(user);
           navigate('/movies');
@@ -44,17 +46,23 @@ const RegisterView = () => {
         // }
     };
 
-    const registerByGoogle = async () => {
-        try {
-          const user = (await signInWithPopup(auth, new GoogleAuthProvider())).user;
-          setUser(user);
-          navigate('/movies');
-        } catch {
-          alert("Error creating user with email and password!");
+    const registerByGoogle = async (e) => {
+        if (!firstName) {
+            alert("a");
+        } else if (!checkGenres()) {
+            alert("Choose at least 10 genres!")
+        } else {
+            try {
+              const user = (await signInWithPopup(auth, new GoogleAuthProvider())).user;
+              setUser(user);
+              navigate('/movies');
+            } catch {
+              alert("Error creating user with email and password!");
+            }
         }
     }
 
-    const createAccount = (e) => {
+    const createAccount = async (e) => {
         e.preventDefault();
         registerByEmail(e);
         if (pass1 != pass2) {
@@ -65,6 +73,10 @@ const RegisterView = () => {
             setFirstName(e.target.firstname.value);
             setLastName(e.target.lastname.value);
             setEmail(e.target.email.value);
+            await setDoc(doc(firestore, "users", user.uid), {
+                firstName: firstName,
+                lastName: lastName
+            });
             navigate("/movies");
         }
     }
@@ -89,9 +101,9 @@ const RegisterView = () => {
             <div className="form-container">
                 <form className="form" onSubmit={(e) => createAccount(e)}>
                     <label htmlFor="first-name">First Name:</label>
-                    <input type="text" id="firstname" required />
+                    <input type="text" id="firstname" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
                     <label htmlFor="last-name">Last Name:</label>
-                    <input type="text" id="lastname" required />
+                    <input type="text" id="lastname" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
                     <label htmlFor="email">Email:</label>
                     <input type="email" id="email" required />
                     <label htmlFor="pass">Password:</label>
