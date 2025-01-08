@@ -6,7 +6,7 @@ import "./LoginView.css"
 import { useStoreContext } from "../context/index.jsx";
 
 const LoginView = () => {
-    const { setEmail } = useStoreContext();
+    // const { setEmail } = useStoreContext();
     const [pass, setPass] = useState("");
     const navigate = useNavigate();
 
@@ -17,7 +17,7 @@ const LoginView = () => {
         } else {
             alert("Wrong Password!");
         }
-        setEmail(e.target.email.value);
+        // setEmail(e.target.email.value);
     }
 
     return (

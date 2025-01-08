@@ -11,8 +11,8 @@ import { firestore } from "../firebase/index.js"
 const RegisterView = () => {
     const [pass1, setPass1] = useState("");
     const [pass2, setPass2] = useState("");
+    const [email, setEmail] = useState("");
     const { user, setUser } = useStoreContext();
-    const { email, setEmail } = useStoreContext();
     const { firstName, setFirstName } = useStoreContext();
     const { lastName, setLastName } = useStoreContext();
     const { genres, setGenres } = useStoreContext();
@@ -35,9 +35,10 @@ const RegisterView = () => {
 
     const registerByEmail = async (event) => {
         event.preventDefault();
+        console.log(email)
     
         // try {
-          const user = (await createUserWithEmailAndPassword(auth, "a@aaqaa.com", "123456")).user;
+          const user = (await createUserWithEmailAndPassword(auth, email, pass1)).user;
           await updateProfile(user, { displayName: `${firstName} ${lastName}` });
           setUser(user);
           navigate('/movies');
@@ -73,10 +74,11 @@ const RegisterView = () => {
             setFirstName(e.target.firstname.value);
             setLastName(e.target.lastname.value);
             setEmail(e.target.email.value);
-            await setDoc(doc(firestore, "users", user.uid), {
-                firstName: firstName,
-                lastName: lastName
-            });
+            // console.log(user.uid);
+            // await setDoc(doc(firestore, "users", user.uid), {
+            //     firstName: firstName,
+            //     lastName: lastName
+            // });
             navigate("/movies");
         }
     }
@@ -105,7 +107,7 @@ const RegisterView = () => {
                     <label htmlFor="last-name">Last Name:</label>
                     <input type="text" id="lastname" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
                     <label htmlFor="email">Email:</label>
-                    <input type="email" id="email" required />
+                    <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
                     <label htmlFor="pass">Password:</label>
                     <input type="password" id="pass" value={pass1} onChange={(event) => { setPass1(event.target.value) }} required />
                     <label htmlFor="reenter-pass">Re-enter Password:</label>

@@ -4,12 +4,13 @@ import { useStoreContext } from "../context";
 import "./Header.css"
 
 const Header = () => {
-    const { email } = useStoreContext();
+    const { user } = useStoreContext();
     const { firstName } = useStoreContext();
     const navigate = useNavigate();
 
     const loginButtons = () => {
-        if (email == "") {
+        console.log(user.email);
+        if (user.email == null) {
             return (
                 <>
                     <a href="/login">Log In</a>

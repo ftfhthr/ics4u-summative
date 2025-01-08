@@ -5,7 +5,7 @@ import { useStoreContext } from "../context";
 import "./SettingsView.css"
 
 const SettingsView = () => {
-    const { email } = useStoreContext();
+    const { user } = useStoreContext();
     const { firstName, setFirstName } = useStoreContext();
     const { lastName, setLastName } = useStoreContext();
     const { genres, setGenres } = useStoreContext();
@@ -58,7 +58,7 @@ const SettingsView = () => {
                     <div className="form">
                         <form onSubmit={(e) => updateSettings(e)}>
                             <label htmlFor="email">Email:</label>
-                            <input type="email" name="email" readOnly value={email} />
+                            <input type="email" name="email" readOnly value={user.email} />
                             <label htmlFor="first-name">First Name:</label>
                             <input type="text" name="firstname" defaultValue={firstName} required />
                             <label htmlFor="last-name">Last Name:</label>
