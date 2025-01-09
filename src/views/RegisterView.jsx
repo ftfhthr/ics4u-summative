@@ -75,10 +75,9 @@ const RegisterView = () => {
             setLastName(e.target.lastname.value);
             setEmail(e.target.email.value);
             // console.log(user.uid);
-            // await setDoc(doc(firestore, "users", user.uid), {
-            //     firstName: firstName,
-            //     lastName: lastName
-            // });
+            await setDoc(doc(firestore, "users", user.uid), {
+                genres: genres
+            });
             navigate("/movies");
         }
     }
