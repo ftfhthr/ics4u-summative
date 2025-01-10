@@ -9,7 +9,6 @@ const Header = () => {
     const navigate = useNavigate();
 
     const loginButtons = () => {
-        console.log(user.email);
         if (user.email == null) {
             return (
                 <>

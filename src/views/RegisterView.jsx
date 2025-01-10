@@ -41,7 +41,6 @@ const RegisterView = () => {
           const user = (await createUserWithEmailAndPassword(auth, email, pass1)).user;
           await updateProfile(user, { displayName: `${firstName} ${lastName}` });
           setUser(user);
-          navigate('/movies');
         // } catch (error) {
         //   alert("Error creating user with email and password!");
         // }
@@ -96,6 +95,14 @@ const RegisterView = () => {
         setGenres(JSON.parse(JSON.stringify(checkedGenres)));
     }
 
+    const selectAll = () => {
+        checkedGenres = JSON.parse(JSON.stringify(genres));
+        for (var i = 0; i < genres.length; i++) {
+            checkedGenres[i].checked = true;
+        }
+        setGenres(JSON.parse(JSON.stringify(checkedGenres)));
+    }
+
     return (
         <div>
             <Header />
@@ -120,6 +127,7 @@ const RegisterView = () => {
                     <button onClick={() => registerByGoogle()} className="register-button">Register by Google</button>
                     <input type="submit" value={"Sign Up"} required />
                 </form>
+                <button onClick={() => selectAll()} className="select">Select All</button>
             </div>
             <Footer />
         </div>

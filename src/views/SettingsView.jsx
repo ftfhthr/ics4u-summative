@@ -3,6 +3,9 @@ import Footer from "../components/Footer";
 import { useNavigate } from "react-router-dom";
 import { useStoreContext } from "../context";
 import "./SettingsView.css"
+import { doc, setDoc } from "firebase/firestore"; 
+import { updateProfile } from "firebase/auth"; 
+import { firestore } from "../firebase/index.js"
 
 const SettingsView = () => {
     const { user } = useStoreContext();
@@ -35,7 +38,19 @@ const SettingsView = () => {
             setFirstName(e.target.firstname.value);
             setLastName(e.target.lastname.value);
             setGenres(JSON.parse(JSON.stringify(checkedGenres)));
+            changeName();
+            updateGenres();
         }
+    }
+    
+    const changeName = async () => {
+        await updateProfile(user, { displayName: `${firstName} ${lastName}` });
+    }
+
+    const updateGenres = async () => {
+        await setDoc(doc(firestore, "users", user.uid), {
+            genres: genres
+        });
     }
 
     const setCheckedGenres = (e) => {
@@ -60,9 +75,9 @@ const SettingsView = () => {
                             <label htmlFor="email">Email:</label>
                             <input type="email" name="email" readOnly value={user.email} />
                             <label htmlFor="first-name">First Name:</label>
-                            <input type="text" name="firstname" defaultValue={firstName} required />
+                            <input type="text" name="firstname" defaultValue={(user.displayName.split(" "))[0]} required />
                             <label htmlFor="last-name">Last Name:</label>
-                            <input type="text" name="lastname" defaultValue={lastName} required />
+                            <input type="text" name="lastname" defaultValue={(user.displayName.split(" "))[1]} required />
                             {genres.map((genre) => (
                                 <div key={genre.id} className="genre-checkbox">
                                     <input type="checkbox" id={genre.id} defaultChecked={genre.checked} onChange={(event) => setCheckedGenres(event)} />

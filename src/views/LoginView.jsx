@@ -5,34 +5,29 @@ import Footer from "../components/Footer.jsx"
 import "./LoginView.css"
 import { useStoreContext } from "../context/index.jsx";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore"; 
+import { firestore } from "../firebase/index.js"
 
 const LoginView = () => {
     const { setUser } = useStoreContext();
+    const { setGenres } = useStoreContext();
     const [email, setEmail] = useState("");
     const [pass, setPass] = useState("");
     const navigate = useNavigate();
 
-    const login = (e) => {
+    const readGenreList = async () => {
+    }
+    
+    const login = async (e) => {
         e.preventDefault();
         const auth = getAuth();
-        signInWithEmailAndPassword(auth, email, pass)
-        .then((userCredential) => {
-            // Signed in 
-            const user = userCredential.user;
-            setUser(user);
-            // ...
-            console.log(user);
-        })
-        .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-        });
-        // if (pass == "iloveyou") {
-        //     navigate("/movies");
-        // } else {
-        //     alert("Wrong Password!");
-        // }
-        // setEmail(e.target.email.value);
+        const user = (await signInWithEmailAndPassword(auth, email, pass)).user;
+        setUser(user);
+        const docRef = doc(firestore, "users", user.uid);
+        const data = (await getDoc(docRef)).data();
+        setGenres(data.genres);
+        readGenreList();
+        navigate("/movies");
     }
 
     return (
