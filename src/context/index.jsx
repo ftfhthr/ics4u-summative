@@ -1,5 +1,5 @@
 import { createContext, useState, useContext, useEffect } from "react";
-import { Map } from 'immutable';
+import { fromJS, Map } from 'immutable';
 
 const StoreContext = createContext();
 
@@ -65,7 +65,18 @@ export const StoreProvider = ({ children }) => {
             checked: false
         }
     ]);
-    const [cart, setCart] = useState(Map());
+    // const [cart, setCart] = useState(Map());
+    const [cart, setCart] = useState(fromJS(JSON.parse(localStorage.getItem("cart"))));
+
+    useEffect(() => {
+        // setCart(fromJS(JSON.parse(localStorage.getItem("cart"))));
+        // const localCart = JSON.parse(localStorage.getItem("cart"));
+        // console.log(localCart[0]);
+        // for (var i = 0; i < Object.keys(localCart).length; i++) {
+        //     setCart((prevCart) => prevCart.set(localCart[i].id, { title: localCart[i].title, url: `https://image.tmdb.org/t/p/w500${localCart[i].poster_path}` }));
+        // }
+        console.log(cart);
+    }, []);
 
     return (
         <StoreContext.Provider value={{ user, setUser, firstName, setFirstName, lastName, setLastName, genres, setGenres, cart, setCart }}>

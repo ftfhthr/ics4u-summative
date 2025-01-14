@@ -13,9 +13,9 @@ const CartView = () => {
         setCart((prevCart) => prevCart.delete(key));
     }
 
-    useEffect(() => {
-        localStorage.setItem("cart", JSON.stringify(cart));
-    });
+    // useEffect(() => {
+    //     localStorage.setItem("cart", JSON.stringify(cart));
+    // });
 
     return (
         <>

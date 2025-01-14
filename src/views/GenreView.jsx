@@ -56,7 +56,8 @@ const GenreView = () => {
     }
 
     const buy = (movie) => {
-        setCart((prevCart) => prevCart.set(movie.id, { title: movie.title, url: `https://image.tmdb.org/t/p/w500${movie.poster_path}` }))
+        setCart((prevCart) => prevCart.set(movie.id, { title: movie.title, url: `https://image.tmdb.org/t/p/w500${movie.poster_path}` }));
+        console.log(cart);
     }
     
     useEffect(() => {
