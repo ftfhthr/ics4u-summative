@@ -5,7 +5,6 @@ import "./Header.css"
 
 const Header = () => {
     const { user } = useStoreContext();
-    const { firstName } = useStoreContext();
     const navigate = useNavigate();
 
     const loginButtons = () => {
@@ -19,7 +18,7 @@ const Header = () => {
         } else {
             return (
                 <>
-                    <p>{`Hello, ${firstName}!`}</p>
+                    <p>{`Hello, ${(user.displayName.split(" "))[0]}!`}</p>
                     <button onClick={() => navigate("/cart")}>Cart</button>
                     <button onClick={() => navigate("/settings")}>Settings</button>
                     <a href="/">Log Out</a>

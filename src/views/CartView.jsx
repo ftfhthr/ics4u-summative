@@ -16,6 +16,7 @@ const CartView = () => {
     // useEffect(() => {
     //     localStorage.setItem("cart", JSON.stringify(cart));
     // });
+    console.log(cart);
 
     return (
         <>
