@@ -8,6 +8,7 @@ export const StoreProvider = ({ children }) => {
     // const [email, setEmail] = useState("");
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
+    const [cart, setCart] = useState(Map());
     const [genres, setGenres] = useState([
         {
             genre: "Action",
@@ -65,18 +66,15 @@ export const StoreProvider = ({ children }) => {
             checked: false
         }
     ]);
-    // const [cart, setCart] = useState(Map());
-    console.log(fromJS(JSON.parse(localStorage.getItem("cart"))));
-    const [cart, setCart] = useState(fromJS(JSON.parse(localStorage.getItem("cart"))));
 
     useEffect(() => {
-        // setCart(fromJS(JSON.parse(localStorage.getItem("cart"))));
-        const localCart = JSON.parse(localStorage.getItem("cart"));
-        const map = Map()
-        for (const key in localCart) {
-            setCart(map.set(key, localCart[key]));
+        if (localStorage.getItem("cart")) {
+            const localCart = JSON.parse(localStorage.getItem("cart"));
+            console.log(localCart);
+            for (const key in localCart) {
+                setCart((prevCart) => prevCart.set(key, JSON.parse(JSON.stringify(localCart[key]))));
+            }
         }
-        console.log(cart);
     }, []);
 
     return (
