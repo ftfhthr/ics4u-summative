@@ -13,8 +13,8 @@ const RegisterView = () => {
     const [pass2, setPass2] = useState("");
     const [email, setEmail] = useState("");
     const { user, setUser } = useStoreContext();
-    const { firstName, setFirstName } = useStoreContext();
-    const { lastName, setLastName } = useStoreContext();
+    const [ firstName, setFirstName ] = useState("");
+    const [ lastName, setLastName ] = useState("");
     const { genres, setGenres } = useStoreContext();
     const navigate = useNavigate();
     var checkedGenres = JSON.parse(JSON.stringify(genres));
@@ -47,17 +47,18 @@ const RegisterView = () => {
     };
 
     const registerByGoogle = async (e) => {
-        if (!firstName) {
-            alert("a");
-        } else if (!checkGenres()) {
+        if (!checkGenres()) {
             alert("Choose at least 10 genres!")
         } else {
             try {
-              const user = (await signInWithPopup(auth, new GoogleAuthProvider())).user;
-              setUser(user);
-              navigate('/movies');
+                const user = (await signInWithPopup(auth, new GoogleAuthProvider())).user;
+                setUser(user);
+                await setDoc(doc(firestore, "users", user.uid), {
+                    genres: genres
+                });
+                navigate('/movies');
             } catch {
-              alert("Error creating user with email and password!");
+                alert("Error creating user with email and password!");
             }
         }
     }

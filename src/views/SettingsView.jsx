@@ -61,6 +61,34 @@ const SettingsView = () => {
         }
     }
 
+    const loadAccountSettings = () => {
+        if ((user.providerData[0])["providerId"] != "google.com") {
+            return (
+                <>
+                    <label htmlFor="email">Email:</label>
+                    <input type="email" name="email" readOnly value={user.email} />
+                    <label htmlFor="first-name">First Name:</label>
+                    <input type="text" name="firstname" defaultValue={(user.displayName.split(" "))[0]} required />
+                    <label htmlFor="last-name">Last Name:</label>
+                    <input type="text" name="lastname" defaultValue={(user.displayName.split(" "))[1]} required />
+                    <label htmlFor="password">Password:</label>
+                    <input type="password" name="password" defaultValue={user.password} required />
+                </>
+            )
+        } else {
+            return (
+                <>
+                    <label htmlFor="email">Email:</label>
+                    <input type="email" name="email" value={user.email} readOnly />
+                    <label htmlFor="first-name">First Name:</label>
+                    <input type="text" name="firstname" defaultValue={(user.displayName.split(" "))[0]} readOnly />
+                    <label htmlFor="last-name">Last Name:</label>
+                    <input type="text" name="lastname" defaultValue={(user.displayName.split(" "))[1] } readOnly />
+                </>
+            )
+        }
+    }
+
     return (
         <>
             <Header />
@@ -68,12 +96,7 @@ const SettingsView = () => {
                 <div className="form-container">
                     <div className="form">
                         <form onSubmit={(e) => updateSettings(e)}>
-                            <label htmlFor="email">Email:</label>
-                            <input type="email" name="email" readOnly value={user.email} />
-                            <label htmlFor="first-name">First Name:</label>
-                            <input type="text" name="firstname" defaultValue={(user.displayName.split(" "))[0]} required />
-                            <label htmlFor="last-name">Last Name:</label>
-                            <input type="text" name="lastname" defaultValue={(user.displayName.split(" "))[1]} required />
+                            {loadAccountSettings()}
                             {genres.map((genre) => (
                                 <div key={genre.id} className="genre-checkbox">
                                     <input type="checkbox" id={genre.id} defaultChecked={genre.checked} onChange={(event) => setCheckedGenres(event)} />

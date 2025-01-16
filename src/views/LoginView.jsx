@@ -4,7 +4,8 @@ import Header from "../components/Header.jsx"
 import Footer from "../components/Footer.jsx"
 import "./LoginView.css"
 import { useStoreContext } from "../context/index.jsx";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { auth } from "../firebase";
 import { doc, getDoc } from "firebase/firestore"; 
 import { firestore } from "../firebase/index.js"
 
@@ -30,6 +31,16 @@ const LoginView = () => {
         navigate("/movies");
     }
 
+    const loginByGoogle = async () => {
+        // try {
+            const user = (await signInWithPopup(auth, new GoogleAuthProvider())).user;
+            setUser(user);
+            navigate('/movies');
+        // } catch {
+        //     alert("Error logging in with Google!");
+        // }
+    }
+
     return (
         <div>
             <Header />
@@ -39,6 +50,7 @@ const LoginView = () => {
                     <input type="email" name="email" value={email} onChange={(event) => { setEmail(event.target.value) }} required />
                     <label htmlFor="password">Password:</label>
                     <input type="password" name="password" value={pass} onChange={(event) => { setPass(event.target.value) }} required />
+                    <button onClick={() => loginByGoogle()} className="login-button">Login with Google</button>
                     <input type="submit" value={"Log In"} required />
                 </form>
             </div>
