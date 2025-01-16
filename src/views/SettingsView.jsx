@@ -9,8 +9,6 @@ import { firestore } from "../firebase/index.js"
 
 const SettingsView = () => {
     const { user } = useStoreContext();
-    const { firstName, setFirstName } = useStoreContext();
-    const { lastName, setLastName } = useStoreContext();
     const { genres, setGenres } = useStoreContext();
     const navigate = useNavigate();
     var checkedGenres = JSON.parse(JSON.stringify(genres));
@@ -35,21 +33,19 @@ const SettingsView = () => {
         if (!checkGenres()) {
             alert("Choose at least 10 genres!");
         } else {
-            setFirstName(e.target.firstname.value);
-            setLastName(e.target.lastname.value);
-            setGenres(JSON.parse(JSON.stringify(checkedGenres)));
-            changeName();
-            updateGenres();
+            changeName(e.target.firstname.value, e.target.lastname.value);
+            updateGenres(JSON.parse(JSON.stringify(checkedGenres)));
         }
     }
     
-    const changeName = async () => {
+    const changeName = async (firstName, lastName) => {
         await updateProfile(user, { displayName: `${firstName} ${lastName}` });
     }
-
-    const updateGenres = async () => {
+    
+    const updateGenres = async (newGenres) => {
+        setGenres(newGenres);
         await setDoc(doc(firestore, "users", user.uid), {
-            genres: genres
+            genres: newGenres
         });
     }
 
