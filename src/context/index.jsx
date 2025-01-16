@@ -67,6 +67,12 @@ export const StoreProvider = ({ children }) => {
         }
     ]);
 
+    const readGenres = async () => {
+        const docRef = doc(firestore, "users", user.uid);
+        const data = (await getDoc(docRef)).data();
+        setGenres(data.genres);
+    }
+
     useEffect(() => {
         if (localStorage.getItem("cart")) {
             const localCart = JSON.parse(localStorage.getItem("cart"));
@@ -74,8 +80,14 @@ export const StoreProvider = ({ children }) => {
                 setCart((prevCart) => prevCart.set(Number(key), JSON.parse(JSON.stringify(localCart[key]))));
             }
         }
-
     }, []);
+    
+    useEffect(() => {
+        if (localStorage.getItem("user")) {
+            setUser(JSON.parse(localStorage.getItem("user")));
+            readGenres();
+        }
+    }, [])
     
     useEffect(() => {
         if (user) {

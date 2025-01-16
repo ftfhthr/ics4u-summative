@@ -15,9 +15,6 @@ const LoginView = () => {
     const [email, setEmail] = useState("");
     const [pass, setPass] = useState("");
     const navigate = useNavigate();
-
-    const readGenreList = async () => {
-    }
     
     const login = async (e) => {
         e.preventDefault();
@@ -27,18 +24,25 @@ const LoginView = () => {
         const docRef = doc(firestore, "users", user.uid);
         const data = (await getDoc(docRef)).data();
         setGenres(data.genres);
-        readGenreList();
         navigate("/movies");
     }
 
     const loginByGoogle = async () => {
-        // try {
+        try {
             const user = (await signInWithPopup(auth, new GoogleAuthProvider())).user;
-            setUser(user);
-            navigate('/movies');
-        // } catch {
-        //     alert("Error logging in with Google!");
-        // }
+            if (!(await getDoc(doc(firestore, "users", user.uid))).data()) {
+                alert("Please register.")
+            } else {
+                setUser(user);
+                const docRef = doc(firestore, "users", user.uid);
+                const data = (await getDoc(docRef)).data();
+                setGenres(data.genres);
+                localStorage.setItem("user", JSON.stringify(user));
+                navigate('/movies');
+            }
+        } catch {
+            alert("Error logging in with Google!");
+        }
     }
 
     return (

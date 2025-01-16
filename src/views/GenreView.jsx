@@ -59,10 +59,6 @@ const GenreView = () => {
     }
 
     const buy = (movie) => {
-        console.log(purchases)
-        console.log(purchases.has(movie.id))
-        console.log(cart)
-        console.log(cart.has(movie.id))
         if (!purchases.has(movie.id)) {
             setCart((prevCart) => prevCart.set(movie.id, { title: movie.title, url: `https://image.tmdb.org/t/p/w500${movie.poster_path}` }));
         } else {

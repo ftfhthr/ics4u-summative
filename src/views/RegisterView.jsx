@@ -4,7 +4,7 @@ import Header from "../components/Header.jsx"
 import Footer from "../components/Footer.jsx"
 import { useStoreContext } from "../context/index.jsx";
 import { createUserWithEmailAndPassword, updateProfile, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore"; 
+import { doc, setDoc, getDoc } from "firebase/firestore"; 
 import { auth } from "../firebase";
 import { firestore } from "../firebase/index.js"
 
@@ -50,16 +50,20 @@ const RegisterView = () => {
         if (!checkGenres()) {
             alert("Choose at least 10 genres!")
         } else {
-            try {
+            // try {
                 const user = (await signInWithPopup(auth, new GoogleAuthProvider())).user;
+                if ((await getDoc(doc(firestore, "users", user.uid))).data()) {
+                    alert("Account already exists.")
+                    return;
+                }
                 setUser(user);
                 await setDoc(doc(firestore, "users", user.uid), {
                     genres: genres
                 });
                 navigate('/movies');
-            } catch {
-                alert("Error creating user with email and password!");
-            }
+            // } catch {
+            //     alert("Error creating user with email and password!");
+            // }
         }
     }
 
