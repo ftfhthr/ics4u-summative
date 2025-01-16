@@ -3,7 +3,7 @@ import Footer from "../components/Footer";
 import { useNavigate } from "react-router-dom";
 import { useStoreContext } from "../context";
 import "./SettingsView.css"
-import { doc, setDoc } from "firebase/firestore"; 
+import { doc, updateDoc } from "firebase/firestore"; 
 import { updateProfile } from "firebase/auth"; 
 import { firestore } from "../firebase/index.js"
 
@@ -44,7 +44,7 @@ const SettingsView = () => {
     
     const updateGenres = async (newGenres) => {
         setGenres(newGenres);
-        await setDoc(doc(firestore, "users", user.uid), {
+        await updateDoc(doc(firestore, "users", user.uid), {
             genres: newGenres
         });
     }

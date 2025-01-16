@@ -10,6 +10,7 @@ const GenreView = () => {
     const [page, setPage] = useState(1);
     const [done, setDone] = useState(false);
     const { cart, setCart } = useStoreContext();
+    const { purchases } = useStoreContext();
     const params = useParams();
     const navigate = useNavigate();
     const location = useLocation();
@@ -47,16 +48,26 @@ const GenreView = () => {
         getMovies();
     }
 
-    const setBuyText = (inCart) => {
+    const setBuyText = (inCart, purchased) => {
         if (inCart) {
             return "Added";
+        } else if (purchased) {
+            return "Purchased";
         } else {
             return "Buy";
         }
     }
 
     const buy = (movie) => {
-        setCart((prevCart) => prevCart.set(movie.id, { title: movie.title, url: `https://image.tmdb.org/t/p/w500${movie.poster_path}` }));
+        console.log(purchases)
+        console.log(purchases.has(movie.id))
+        console.log(cart)
+        console.log(cart.has(movie.id))
+        if (!purchases.has(movie.id)) {
+            setCart((prevCart) => prevCart.set(movie.id, { title: movie.title, url: `https://image.tmdb.org/t/p/w500${movie.poster_path}` }));
+        } else {
+            alert("Error: Item already purchased");
+        }
     }
     
     useEffect(() => {
@@ -75,7 +86,7 @@ const GenreView = () => {
                         <a onClick={() => navigate(`/movies/details/${movie.id}`)}>
                             <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt="" />
                         </a>
-                        <button className="buy-button" onClick={() => buy(movie)}>{setBuyText(cart.has(movie.id))}</button>
+                        <button className="buy-button" onClick={() => buy(movie)}>{setBuyText(cart.has(movie.id), purchases.has(movie.id))}</button>
                     </div>
                 ))}
             </div>

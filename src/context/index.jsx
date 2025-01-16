@@ -1,11 +1,14 @@
 import { createContext, useState, useContext, useEffect } from "react";
 import { fromJS, Map } from 'immutable';
+import { doc, getDoc } from "firebase/firestore"; 
+import { firestore } from "../firebase/index.js"
 
 const StoreContext = createContext();
 
 export const StoreProvider = ({ children }) => {
     const [user, setUser] = useState({});
     const [cart, setCart] = useState(Map());
+    const [purchases, setPurchases] = useState(Map());
     const [genres, setGenres] = useState([
         {
             genre: "Action",
@@ -67,15 +70,32 @@ export const StoreProvider = ({ children }) => {
     useEffect(() => {
         if (localStorage.getItem("cart")) {
             const localCart = JSON.parse(localStorage.getItem("cart"));
-            console.log(localCart);
             for (const key in localCart) {
-                setCart((prevCart) => prevCart.set(key, JSON.parse(JSON.stringify(localCart[key]))));
+                setCart((prevCart) => prevCart.set(Number(key), JSON.parse(JSON.stringify(localCart[key]))));
             }
         }
+
     }, []);
+    
+    useEffect(() => {
+        if (user) {
+            getPurchasedMovies();
+            console.log(purchases);
+        }
+    }, [user])
+    
+    const getPurchasedMovies = async () => {
+        if ((await getDoc(doc(firestore, "users", user.uid))).data().purchasedMovies) {
+            const movies = (await getDoc(doc(firestore, "users", user.uid))).data().purchasedMovies;
+            console.log(movies);
+            for (const key in movies) {
+                setPurchases((prev) => prev.set(Number(key), JSON.parse(JSON.stringify(movies[key]))));
+            }
+        }
+    }
 
     return (
-        <StoreContext.Provider value={{ user, setUser, genres, setGenres, cart, setCart }}>
+        <StoreContext.Provider value={{ user, setUser, genres, setGenres, cart, setCart, purchases, setPurchases }}>
             {children}
         </StoreContext.Provider>
     );
