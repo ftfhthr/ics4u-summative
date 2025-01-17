@@ -24,12 +24,14 @@ const LoginView = () => {
         const docRef = doc(firestore, "users", user.uid);
         const data = (await getDoc(docRef)).data();
         setGenres(data.genres);
+        localStorage.setItem("user", JSON.stringify(user));
         navigate("/movies");
     }
 
     const loginByGoogle = async () => {
-        try {
+        // try {
             const user = (await signInWithPopup(auth, new GoogleAuthProvider())).user;
+            console.log(user);
             if (!(await getDoc(doc(firestore, "users", user.uid))).data()) {
                 alert("Please register.")
             } else {
@@ -40,21 +42,22 @@ const LoginView = () => {
                 localStorage.setItem("user", JSON.stringify(user));
                 navigate('/movies');
             }
-        } catch {
-            alert("Error logging in with Google!");
-        }
+        // } catch {
+        //     alert("Error logging in with Google!");
+        // }
     }
 
     return (
         <div>
             <Header />
             <div className="form-container">
-                <form className="form" onSubmit={(e) => { login(e) }}>
+                <form className="form">
                     <label htmlFor="email">Email:</label>
                     <input type="email" name="email" value={email} onChange={(event) => { setEmail(event.target.value) }} required />
                     <label htmlFor="password">Password:</label>
                     <input type="password" name="password" value={pass} onChange={(event) => { setPass(event.target.value) }} required />
                     <button onClick={() => loginByGoogle()} className="login-button">Login with Google</button>
+                    <button onClick={(e) => login(e)} className="login-button">Login</button>
                     <input type="submit" value={"Log In"} required />
                 </form>
             </div>

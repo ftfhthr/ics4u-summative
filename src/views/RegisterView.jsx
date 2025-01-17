@@ -53,14 +53,14 @@ const RegisterView = () => {
             // try {
                 const user = (await signInWithPopup(auth, new GoogleAuthProvider())).user;
                 if ((await getDoc(doc(firestore, "users", user.uid))).data()) {
-                    alert("Account already exists.")
-                    return;
+                    alert("Account already exists.");
+                } else {
+                    setUser(user);
+                    await setDoc(doc(firestore, "users", user.uid), {
+                        genres: genres
+                    });
+                    navigate('/movies');
                 }
-                setUser(user);
-                await setDoc(doc(firestore, "users", user.uid), {
-                    genres: genres
-                });
-                navigate('/movies');
             // } catch {
             //     alert("Error creating user with email and password!");
             // }

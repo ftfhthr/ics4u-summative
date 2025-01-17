@@ -1,13 +1,16 @@
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useStoreContext } from "../context"
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./CartView.css";
 import { firestore } from "../firebase";
 import { doc, updateDoc } from "firebase/firestore";
+import { Map } from "immutable";
 
 const CartView = () => {
+    const [ removing, setRemoving ] = useState(false);
+    const [ buying, setBuying ] = useState(false);
     const { user } = useStoreContext();
     const { cart, setCart } = useStoreContext();
     const { purchases, setPurchases } = useStoreContext();
@@ -18,18 +21,37 @@ const CartView = () => {
         for (const key in localCart) {
             setPurchases((prev) => prev.set(key, JSON.parse(JSON.stringify(localCart[key]))));
         }
+        setBuying(true);
+        alert("Thank you for your purchase!");
+        setCart(Map());
+        localStorage.setItem("cart", JSON.stringify(Map()));
+    }
+
+    const buy = async () => {
+        console.log(purchases);
         await updateDoc(doc(firestore, "users", user.uid), {
             purchasedMovies: purchases.toJS()
         });
     }
-
+    
     const removeItem = (key) => {
         setCart((prevCart) => prevCart.delete(key));
+        setRemoving(true);
     }
 
     useEffect(() => {
-        localStorage.setItem("cart", JSON.stringify(cart));
-    });
+        if (buying) {
+            buy();
+            setBuying(false);
+        }
+    }, [buying]);
+    
+    useEffect(() => {
+        if (removing) {
+            localStorage.setItem("cart", JSON.stringify(cart));
+            setRemoving(false);
+        }
+    }, [removing]);
 
     return (
         <>

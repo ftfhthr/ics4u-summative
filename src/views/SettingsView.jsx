@@ -1,15 +1,17 @@
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import { useStoreContext } from "../context";
 import "./SettingsView.css"
-import { doc, updateDoc } from "firebase/firestore"; 
+import { doc, updateDoc, getDoc } from "firebase/firestore"; 
 import { updateProfile } from "firebase/auth"; 
 import { firestore } from "../firebase/index.js"
 
 const SettingsView = () => {
-    const { user } = useStoreContext();
+    const { user, setUser } = useStoreContext();
     const { genres, setGenres } = useStoreContext();
+    const { purchases } = useStoreContext();
     const navigate = useNavigate();
     var checkedGenres = JSON.parse(JSON.stringify(genres));
 
@@ -62,32 +64,47 @@ const SettingsView = () => {
     }
 
     const loadAccountSettings = () => {
-        if ((user.providerData[0])["providerId"] != "google.com") {
-            return (
-                <>
-                    <label htmlFor="email">Email:</label>
-                    <input type="email" name="email" readOnly value={user.email} />
-                    <label htmlFor="first-name">First Name:</label>
-                    <input type="text" name="firstname" defaultValue={(user.displayName.split(" "))[0]} required />
-                    <label htmlFor="last-name">Last Name:</label>
-                    <input type="text" name="lastname" defaultValue={(user.displayName.split(" "))[1]} required />
-                    <label htmlFor="password">Password:</label>
-                    <input type="password" name="password" defaultValue={user.password} required />
-                </>
-            )
-        } else {
-            return (
-                <>
-                    <label htmlFor="email">Email:</label>
-                    <input type="email" name="email" value={user.email} readOnly />
-                    <label htmlFor="first-name">First Name:</label>
-                    <input type="text" name="firstname" defaultValue={(user.displayName.split(" "))[0]} readOnly />
-                    <label htmlFor="last-name">Last Name:</label>
-                    <input type="text" name="lastname" defaultValue={(user.displayName.split(" "))[1] } readOnly />
-                </>
-            )
+        if (user.uid) {
+            if ((user.providerData[0])["providerId"] != "google.com") {
+                return (
+                    <>
+                        <label htmlFor="email">Email:</label>
+                        <input type="email" name="email" readOnly value={user.email} />
+                        <label htmlFor="first-name">First Name:</label>
+                        <input type="text" name="firstname" defaultValue={(user.displayName.split(" "))[0]} required />
+                        <label htmlFor="last-name">Last Name:</label>
+                        <input type="text" name="lastname" defaultValue={(user.displayName.split(" "))[1]} required />
+                        <label htmlFor="password">Password:</label>
+                        <input type="password" name="password" defaultValue={user.password} required />
+                    </>
+                )
+            } else {
+                return (
+                    <>
+                        <label htmlFor="email">Email:</label>
+                        <input type="email" name="email" value={user.email} readOnly />
+                        <label htmlFor="first-name">First Name:</label>
+                        <input type="text" name="firstname" defaultValue={(user.displayName.split(" "))[0]} readOnly />
+                        <label htmlFor="last-name">Last Name:</label>
+                        <input type="text" name="lastname" defaultValue={(user.displayName.split(" "))[1] } readOnly />
+                    </>
+                )
+            }
         }
     }
+
+    const readGenres = async () => {
+        if (user.uid) {
+            const docRef = doc(firestore, "users", user.uid);
+            const data = (await getDoc(docRef)).data();
+            setGenres(data.genres);
+        }
+    }
+    
+    useEffect(() => {
+        setUser(JSON.parse(localStorage.getItem("user")));
+        readGenres();
+    }, []);
 
     return (
         <>
@@ -103,6 +120,12 @@ const SettingsView = () => {
                                     <label htmlFor={genre.genre}>{genre.genre}</label>
                                 </div>
                             ))}
+                            <h2>Past Purchases:</h2>
+                            {purchases.entrySeq().map(([key, value]) => {
+                                return (
+                                        <p key={key}>{value.title}</p>
+                                )
+                            })}
                             <input type="submit" value={"Save Settings"} required />
                         </form>
                         <button onClick={() => navigate("/movies")}>Back</button>

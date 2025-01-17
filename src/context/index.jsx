@@ -68,13 +68,15 @@ export const StoreProvider = ({ children }) => {
     ]);
 
     const readGenres = async () => {
-        const docRef = doc(firestore, "users", user.uid);
-        const data = (await getDoc(docRef)).data();
-        setGenres(data.genres);
+        if (user.uid) {
+            const docRef = doc(firestore, "users", user.uid);
+            const data = (await getDoc(docRef)).data();
+            setGenres(data.genres);
+        }
     }
 
     useEffect(() => {
-        if (localStorage.getItem("cart")) {
+        if (localStorage.getItem("cart") != "{}") {
             const localCart = JSON.parse(localStorage.getItem("cart"));
             for (const key in localCart) {
                 setCart((prevCart) => prevCart.set(Number(key), JSON.parse(JSON.stringify(localCart[key]))));
@@ -83,23 +85,23 @@ export const StoreProvider = ({ children }) => {
     }, []);
     
     useEffect(() => {
+        console.log(localStorage.getItem("user"));
         if (localStorage.getItem("user")) {
             setUser(JSON.parse(localStorage.getItem("user")));
             readGenres();
         }
-    }, [])
+    }, [user.uid]);
     
     useEffect(() => {
-        if (user) {
+        if (user.uid) {
+            setPurchases(Map());
             getPurchasedMovies();
-            console.log(purchases);
         }
-    }, [user])
+    }, [user.uid])
     
     const getPurchasedMovies = async () => {
         if ((await getDoc(doc(firestore, "users", user.uid))).data().purchasedMovies) {
             const movies = (await getDoc(doc(firestore, "users", user.uid))).data().purchasedMovies;
-            console.log(movies);
             for (const key in movies) {
                 setPurchases((prev) => prev.set(Number(key), JSON.parse(JSON.stringify(movies[key]))));
             }
