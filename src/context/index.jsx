@@ -1,5 +1,5 @@
 import { createContext, useState, useContext, useEffect } from "react";
-import { fromJS, Map } from 'immutable';
+import { Map } from 'immutable';
 import { doc, getDoc } from "firebase/firestore"; 
 import { firestore } from "../firebase/index.js"
 
@@ -76,16 +76,15 @@ export const StoreProvider = ({ children }) => {
     }
 
     useEffect(() => {
-        if (localStorage.getItem("cart") != "{}") {
-            const localCart = JSON.parse(localStorage.getItem("cart"));
+        if (localStorage.getItem(user.uid) != "{}" && cart == Map()) {
+            const localCart = JSON.parse(localStorage.getItem(user.uid));
             for (const key in localCart) {
                 setCart((prevCart) => prevCart.set(Number(key), JSON.parse(JSON.stringify(localCart[key]))));
             }
         }
-    }, []);
+    });
     
     useEffect(() => {
-        console.log(localStorage.getItem("user"));
         if (localStorage.getItem("user")) {
             setUser(JSON.parse(localStorage.getItem("user")));
             readGenres();
@@ -94,7 +93,6 @@ export const StoreProvider = ({ children }) => {
     
     useEffect(() => {
         if (user.uid) {
-            setPurchases(Map());
             getPurchasedMovies();
         }
     }, [user.uid])
@@ -102,6 +100,7 @@ export const StoreProvider = ({ children }) => {
     const getPurchasedMovies = async () => {
         if ((await getDoc(doc(firestore, "users", user.uid))).data().purchasedMovies) {
             const movies = (await getDoc(doc(firestore, "users", user.uid))).data().purchasedMovies;
+            setPurchases(Map());
             for (const key in movies) {
                 setPurchases((prev) => prev.set(Number(key), JSON.parse(JSON.stringify(movies[key]))));
             }

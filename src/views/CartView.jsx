@@ -17,18 +17,17 @@ const CartView = () => {
     const navigate = useNavigate();
 
     const checkout = async () => {
-        const localCart = JSON.parse(localStorage.getItem("cart"));
+        const localCart = JSON.parse(localStorage.getItem(user.uid));
         for (const key in localCart) {
             setPurchases((prev) => prev.set(key, JSON.parse(JSON.stringify(localCart[key]))));
         }
         setBuying(true);
         alert("Thank you for your purchase!");
         setCart(Map());
-        localStorage.setItem("cart", JSON.stringify(Map()));
+        localStorage.setItem(user.uid, JSON.stringify(Map()));
     }
 
     const buy = async () => {
-        console.log(purchases);
         await updateDoc(doc(firestore, "users", user.uid), {
             purchasedMovies: purchases.toJS()
         });
@@ -48,7 +47,7 @@ const CartView = () => {
     
     useEffect(() => {
         if (removing) {
-            localStorage.setItem("cart", JSON.stringify(cart));
+            localStorage.setItem(user.uid, JSON.stringify(cart));
             setRemoving(false);
         }
     }, [removing]);

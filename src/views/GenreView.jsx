@@ -90,7 +90,7 @@ const GenreView = () => {
     
     useEffect(() => {
         if (adding) {
-            localStorage.setItem("cart", JSON.stringify(cart.toJS()));
+            localStorage.setItem(user.uid, JSON.stringify(cart.toJS()));
             setAdding(false);
         }
     }, [adding])

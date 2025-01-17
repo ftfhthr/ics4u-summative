@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { useStoreContext } from "../context";
 import "./SettingsView.css"
 import { doc, updateDoc, getDoc } from "firebase/firestore"; 
-import { updateProfile } from "firebase/auth"; 
+import { getAuth, updatePassword, updateProfile } from "firebase/auth"; 
 import { firestore } from "../firebase/index.js"
 
 const SettingsView = () => {
@@ -36,12 +36,24 @@ const SettingsView = () => {
             alert("Choose at least 10 genres!");
         } else {
             changeName(e.target.firstname.value, e.target.lastname.value);
+            // changePass(e.target.password.value);
             updateGenres(JSON.parse(JSON.stringify(checkedGenres)));
         }
     }
     
     const changeName = async (firstName, lastName) => {
-        await updateProfile(user, { displayName: `${firstName} ${lastName}` });
+        const auth = getAuth();
+        console.log(auth.currentUser);
+        await updateProfile(auth.currentUser, { displayName: `${firstName} ${lastName}` });
+        setUser(auth.currentUser);
+        localStorage.setItem("user", JSON.stringify(auth.currentUser));
+    }
+
+    const changePass = async (pass) => {
+        const auth = getAuth();
+        await updatePassword(auth.currentUser, { password: pass });
+        // setUser(auth.currentUser);
+        // localStorage.setItem("user", JSON.stringify(auth.currentUser));
     }
     
     const updateGenres = async (newGenres) => {

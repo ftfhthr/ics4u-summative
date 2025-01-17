@@ -29,7 +29,7 @@ const LoginView = () => {
     }
 
     const loginByGoogle = async () => {
-        // try {
+        try {
             const user = (await signInWithPopup(auth, new GoogleAuthProvider())).user;
             console.log(user);
             if (!(await getDoc(doc(firestore, "users", user.uid))).data()) {
@@ -42,9 +42,10 @@ const LoginView = () => {
                 localStorage.setItem("user", JSON.stringify(user));
                 navigate('/movies');
             }
-        // } catch {
-        //     alert("Error logging in with Google!");
-        // }
+        } catch (error) {
+            console.log(error);
+            alert("Error logging in with Google!");
+        }
     }
 
     return (

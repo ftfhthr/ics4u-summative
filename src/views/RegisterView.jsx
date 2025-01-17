@@ -37,20 +37,21 @@ const RegisterView = () => {
         event.preventDefault();
         console.log(email)
     
-        // try {
+        try {
           const user = (await createUserWithEmailAndPassword(auth, email, pass1)).user;
           await updateProfile(user, { displayName: `${firstName} ${lastName}` });
           setUser(user);
-        // } catch (error) {
-        //   alert("Error creating user with email and password!");
-        // }
+        } catch (error) {
+            console.log(error);
+            alert("Error creating user with email and password!");
+        }
     };
 
     const registerByGoogle = async (e) => {
         if (!checkGenres()) {
             alert("Choose at least 10 genres!")
         } else {
-            // try {
+            try {
                 const user = (await signInWithPopup(auth, new GoogleAuthProvider())).user;
                 if ((await getDoc(doc(firestore, "users", user.uid))).data()) {
                     alert("Account already exists.");
@@ -61,9 +62,10 @@ const RegisterView = () => {
                     });
                     navigate('/movies');
                 }
-            // } catch {
-            //     alert("Error creating user with email and password!");
-            // }
+            } catch (error) {
+                console.log(error);
+                alert("Error creating user with email and password!");
+            }
         }
     }
 
@@ -78,7 +80,6 @@ const RegisterView = () => {
             setFirstName(e.target.firstname.value);
             setLastName(e.target.lastname.value);
             setEmail(e.target.email.value);
-            // console.log(user.uid);
             await setDoc(doc(firestore, "users", user.uid), {
                 genres: genres
             });
