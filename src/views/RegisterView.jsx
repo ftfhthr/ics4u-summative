@@ -33,21 +33,22 @@ const RegisterView = () => {
         }
     }
 
-    const registerByEmail = async (event) => {
-        event.preventDefault();
+    const registerByEmail = async () => {
+        e.preventDefault();
         console.log(email)
     
         try {
           const user = (await createUserWithEmailAndPassword(auth, email, pass1)).user;
           await updateProfile(user, { displayName: `${firstName} ${lastName}` });
           setUser(user);
+          localStorage.setItem("user", JSON.stringify(user));
         } catch (error) {
             console.log(error);
             alert("Error creating user with email and password!");
         }
     };
 
-    const registerByGoogle = async (e) => {
+    const registerByGoogle = async () => {
         if (!checkGenres()) {
             alert("Choose at least 10 genres!")
         } else {
@@ -57,6 +58,7 @@ const RegisterView = () => {
                     alert("Account already exists.");
                 } else {
                     setUser(user);
+                    localStorage.setItem("user", JSON.stringify(user));
                     await setDoc(doc(firestore, "users", user.uid), {
                         genres: genres
                     });
@@ -69,9 +71,8 @@ const RegisterView = () => {
         }
     }
 
-    const createAccount = async (e) => {
-        e.preventDefault();
-        registerByEmail(e);
+    const createAccount = async () => {
+        registerByEmail();
         if (pass1 != pass2) {
             alert("Passwords don't match!");
         } else if (!checkGenres()) {
@@ -113,7 +114,7 @@ const RegisterView = () => {
         <div>
             <Header />
             <div className="form-container">
-                <form className="form" onSubmit={(e) => createAccount(e)}>
+                <form className="form">
                     <label htmlFor="firstname">First Name:</label>
                     <input type="text" id="firstname" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
                     <label htmlFor="lastname">Last Name:</label>
@@ -131,7 +132,8 @@ const RegisterView = () => {
                         </div>
                     ))}
                     <button onClick={() => registerByGoogle()} className="login-button">Register by Google</button>
-                    <input type="submit" value={"Sign Up"} required />
+                    <button onClick={() => createAccount()} className="login-button">Register</button>
+                    {/* <input type="submit" value={"Sign Up"} required /> */}
                 </form>
                 <button onClick={() => selectAll()} className="select">Select All</button>
             </div>
