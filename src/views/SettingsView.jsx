@@ -35,8 +35,10 @@ const SettingsView = () => {
         if (!checkGenres()) {
             alert("Choose at least 10 genres!");
         } else {
-            changeName(e.target.firstname.value, e.target.lastname.value);
-            // changePass(e.target.password.value);
+            if ((user.providerData[0])["providerId"] != "google.com") {
+                changeName(e.target.firstname.value, e.target.lastname.value);
+                changePass(e.target.password.value);
+            }
             updateGenres(JSON.parse(JSON.stringify(checkedGenres)));
         }
     }
@@ -51,9 +53,7 @@ const SettingsView = () => {
 
     const changePass = async (pass) => {
         const auth = getAuth();
-        await updatePassword(auth.currentUser, { password: pass });
-        // setUser(auth.currentUser);
-        // localStorage.setItem("user", JSON.stringify(auth.currentUser));
+        await updatePassword(auth.currentUser, pass);
     }
     
     const updateGenres = async (newGenres) => {
