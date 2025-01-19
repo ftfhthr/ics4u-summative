@@ -114,9 +114,9 @@ const RegisterView = () => {
             <Header />
             <div className="form-container">
                 <form className="form" onSubmit={(e) => createAccount(e)}>
-                    <label htmlFor="first-name">First Name:</label>
+                    <label htmlFor="firstname">First Name:</label>
                     <input type="text" id="firstname" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
-                    <label htmlFor="last-name">Last Name:</label>
+                    <label htmlFor="lastname">Last Name:</label>
                     <input type="text" id="lastname" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
                     <label htmlFor="email">Email:</label>
                     <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
@@ -127,10 +127,10 @@ const RegisterView = () => {
                     {genres.map((genre) => (
                         <div key={genre.id} className="genre-checkbox">
                             <input type="checkbox" id={genre.id} defaultChecked={genre.checked} onChange={(event) => setCheckedGenres(event)} />
-                            <label htmlFor={genre.genre}>{genre.genre}</label>
+                            <label htmlFor={genre.id}>{genre.genre}</label>
                         </div>
                     ))}
-                    <button onClick={() => registerByGoogle()} className="register-button">Register by Google</button>
+                    <button onClick={() => registerByGoogle()} className="login-button">Register by Google</button>
                     <input type="submit" value={"Sign Up"} required />
                 </form>
                 <button onClick={() => selectAll()} className="select">Select All</button>

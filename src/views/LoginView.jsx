@@ -59,7 +59,7 @@ const LoginView = () => {
                     <input type="password" name="password" value={pass} onChange={(event) => { setPass(event.target.value) }} required />
                     <button onClick={() => loginByGoogle()} className="login-button">Login with Google</button>
                     <button onClick={(e) => login(e)} className="login-button">Login</button>
-                    <input type="submit" value={"Log In"} required />
+                    {/* <input type="submit" value={"Log In"} required /> */}
                 </form>
             </div>
             <Footer />
