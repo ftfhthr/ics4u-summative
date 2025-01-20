@@ -45,7 +45,6 @@ const SettingsView = () => {
     
     const changeName = async (firstName, lastName) => {
         const auth = getAuth();
-        console.log(auth.currentUser);
         await updateProfile(auth.currentUser, { displayName: `${firstName} ${lastName}` });
         setUser(auth.currentUser);
         localStorage.setItem("user", JSON.stringify(auth.currentUser));

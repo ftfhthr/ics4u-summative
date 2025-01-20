@@ -12,9 +12,7 @@ const Header = () => {
         auth.signOut();
         navigate("/");
         localStorage.removeItem("user"); 
-        // setUser(null);
         window.location.reload(false);
-        // setUser(null);
     }
 
     const loginButtons = () => {

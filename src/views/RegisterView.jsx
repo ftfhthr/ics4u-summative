@@ -12,16 +12,16 @@ const RegisterView = () => {
     const [pass1, setPass1] = useState("");
     const [pass2, setPass2] = useState("");
     const [email, setEmail] = useState("");
-    const { user, setUser } = useStoreContext();
+    const { setUser } = useStoreContext();
     const [ firstName, setFirstName ] = useState("");
     const [ lastName, setLastName ] = useState("");
     const { genres, setGenres } = useStoreContext();
     const navigate = useNavigate();
-    var checkedGenres = JSON.parse(JSON.stringify(genres));
+    let checkedGenres = JSON.parse(JSON.stringify(genres));
 
     const checkGenres = () => {
-        var genresSelected = 0;
-        for (var genre of genres) {
+        let genresSelected = 0;
+        for (let genre of genres) {
             if (genre.checked) {
                 genresSelected++;
             }
@@ -34,14 +34,15 @@ const RegisterView = () => {
     }
 
     const registerByEmail = async () => {
-        e.preventDefault();
-        console.log(email)
-    
         try {
-          const user = (await createUserWithEmailAndPassword(auth, email, pass1)).user;
-          await updateProfile(user, { displayName: `${firstName} ${lastName}` });
-          setUser(user);
-          localStorage.setItem("user", JSON.stringify(user));
+            const userObj = (await createUserWithEmailAndPassword(auth, email, pass1)).user;
+            await updateProfile(userObj, { displayName: `${firstName} ${lastName}` });
+            setUser(userObj);
+            localStorage.setItem("user", JSON.stringify(userObj));
+            await setDoc(doc(firestore, "users", userObj.uid), {
+                genres: genres
+            });
+            navigate('/movies');
         } catch (error) {
             console.log(error);
             alert("Error creating user with email and password!");
@@ -53,13 +54,13 @@ const RegisterView = () => {
             alert("Choose at least 10 genres!")
         } else {
             try {
-                const user = (await signInWithPopup(auth, new GoogleAuthProvider())).user;
-                if ((await getDoc(doc(firestore, "users", user.uid))).data()) {
+                const userObj = (await signInWithPopup(auth, new GoogleAuthProvider())).user;
+                if ((await getDoc(doc(firestore, "users", userObj.uid))).data()) {
                     alert("Account already exists.");
                 } else {
-                    setUser(user);
-                    localStorage.setItem("user", JSON.stringify(user));
-                    await setDoc(doc(firestore, "users", user.uid), {
+                    setUser(userObj);
+                    localStorage.setItem("user", JSON.stringify(userObj));
+                    await setDoc(doc(firestore, "users", userObj.uid), {
                         genres: genres
                     });
                     navigate('/movies');
@@ -71,26 +72,20 @@ const RegisterView = () => {
         }
     }
 
-    const createAccount = async () => {
-        registerByEmail();
+    const createAccount = (e) => {
+        e.preventDefault();
         if (pass1 != pass2) {
             alert("Passwords don't match!");
         } else if (!checkGenres()) {
             alert("Choose at least 10 genres!")
         } else {
-            setFirstName(e.target.firstname.value);
-            setLastName(e.target.lastname.value);
-            setEmail(e.target.email.value);
-            await setDoc(doc(firestore, "users", user.uid), {
-                genres: genres
-            });
-            navigate("/movies");
+            registerByEmail();
         }
     }
 
     const setCheckedGenres = (e) => {
         checkedGenres = JSON.parse(JSON.stringify(genres));
-        for (var i = 0; i < genres.length; i++) {
+        for (let i = 0; i < genres.length; i++) {
             if (e.target.id == genres[i].id) {
                 if (e.target.checked) {
                     checkedGenres[i].checked = true;
@@ -102,19 +97,11 @@ const RegisterView = () => {
         setGenres(JSON.parse(JSON.stringify(checkedGenres)));
     }
 
-    const selectAll = () => {
-        checkedGenres = JSON.parse(JSON.stringify(genres));
-        for (var i = 0; i < genres.length; i++) {
-            checkedGenres[i].checked = true;
-        }
-        setGenres(JSON.parse(JSON.stringify(checkedGenres)));
-    }
-
     return (
         <div>
             <Header />
             <div className="form-container">
-                <form className="form">
+                <form className="form" onSubmit={(e) => createAccount(e)}>
                     <label htmlFor="firstname">First Name:</label>
                     <input type="text" id="firstname" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
                     <label htmlFor="lastname">Last Name:</label>
@@ -131,11 +118,9 @@ const RegisterView = () => {
                             <label htmlFor={genre.id}>{genre.genre}</label>
                         </div>
                     ))}
-                    <button onClick={() => registerByGoogle()} className="login-button">Register by Google</button>
-                    <button onClick={() => createAccount()} className="login-button">Register</button>
-                    {/* <input type="submit" value={"Sign Up"} required /> */}
+                    <button type="button" onClick={() => registerByGoogle()} className="login-button">Register by Google</button>
+                    <input type="submit" value={"Sign Up"} required />
                 </form>
-                <button onClick={() => selectAll()} className="select">Select All</button>
             </div>
             <Footer />
         </div>
